@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Romantic Relationship Attachment Inventory</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+    h2 { margin-top: 30px; }
+    .question { margin-bottom: 15px; }
+    label { display: block; margin: 5px 0; }
+    .submit-button { margin-top: 30px; padding: 10px 20px; font-size: 16px; }
+    .results { margin-top: 30px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Romantic Relationship Attachment Inventory</h1>
+  <form id="attachmentForm">
+    <p>Rate each statement from 1 (Strongly Disagree) to 5 (Strongly Agree).</p>
+
+    <div id="questions"></div>
+
+    <button type="submit" class="submit-button">Submit</button>
+  </form>
+
+  <div class="results" id="results"></div>
+
+  <script>
+    const questions = [
+      // Secure Attachment
+      "I’m comfortable being emotionally close to others.",
+      "I feel confident that I am worthy of love.",
+      "I can ask for support without feeling weak.",
+      "I feel safe expressing my true feelings.",
+      "I don’t worry excessively about being abandoned.",
+
+      // Anxious Attachment
+      "I tend to feel anxious that people I love may actually stop loving me.",
+      "I require constant reassurance from those who are close to me.",
+      "I find it hard to let go of someone I’m emotionally attached to.",
+      "I often overthink small issues in my relationships.",
+      "I am scared that people will get tired of me and leave.",
+
+      // Avoidant Attachment
+      "Instead of asking for help, I prefer to work on my problems alone.",
+      "Sometimes I need my space away from people I am close to.",
+      "I feel uncomfortable discussing deep emotions.",
+      "It is hard for me to show vulnerabilities.",
+      "I tend to avoid becoming too emotionally attached.",
+
+      // Disorganized Attachment
+      "My relationships can be really confusing in terms of my feelings or extremely emotional.",
+      "I sabotage some relationships without actually knowing the reason.",
+      "I cannot make sense of my reactions to people in close relationships.",
+      "I crave closeness but often expect to be hurt.",
+      "I often feel conflicted between pushing people away and needing their closeness."
+    ];
+
+    const container = document.getElementById("questions");
+    questions.forEach((q, index) => {
+      const div = document.createElement("div");
+      div.className = "question";
+      div.innerHTML = `<label>${index + 1}. ${q}</label>` +
+        [1, 2, 3, 4, 5].map(n => `
+          <label><input type="radio" name="q${index + 1}" value="${n}" required> ${n}</label>
+        `).join("");
+      container.appendChild(div);
+    });
+
+    document.getElementById("attachmentForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const scores = { Secure: 0, Anxious: 0, Avoidant: 0, Disorganized: 0 };
+      let validForm = true;
+
+      for (let i = 1; i <= 20; i++) {
+        const selectedAnswer = document.querySelector(`input[name=q${i}]:checked`);
+        if (!selectedAnswer) {
+          validForm = false;
+          break;
+        }
+        const val = parseInt(selectedAnswer.value);
+        if (i <= 5) scores.Secure += val;
+        else if (i <= 10) scores.Anxious += val;
+        else if (i <= 15) scores.Avoidant += val;
+        else scores.Disorganized += val;
+      }
+
+      if (!validForm) {
+        alert("Please answer all questions before submitting.");
+        return;
+      }
+
+      function interpret(score) {
+        if (score >= 21) return "Strong and consistent attachment behavior (High)";
+        if (score >= 16) return "Clear behavioral features of this style (Moderate)";
+        if (score >= 11) return "Some tendencies, but not dominant (Mild)";
+        return "Minimal tendencies of the attachment style (Low)";
+      }
+
+      document.getElementById("results").innerHTML = `
+        <h2>Your Results:</h2>
+        <p><strong>Secure Attachment:</strong> ${scores.Secure} (${interpret(scores.Secure)})</p>
+        <p><strong>Anxious Attachment:</strong> ${scores.Anxious} (${interpret(scores.Anxious)})</p>
+        <p><strong>Avoidant Attachment:</strong> ${scores.Avoidant} (${interpret(scores.Avoidant)})</p>
+        <p><strong>Disorganized Attachment:</strong> ${scores.Disorganized} (${interpret(scores.Disorganized)})</p>
+      `;
+    });
+  </script>
+</body>
+</html>
